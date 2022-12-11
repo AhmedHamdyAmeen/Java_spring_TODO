@@ -4,6 +4,8 @@ import com.ameen.ToDo.Model.ToDo;
 import com.ameen.ToDo.Service.ToDoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,23 +31,28 @@ public class ToDoController {
     }
 
     @GetMapping("list")
-    public List<ToDo> getTodos() {
-        return toDoService.getTodos();
+    public ResponseEntity<List<ToDo>> getTodos() {
+        List<ToDo> result = toDoService.getTodos();
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("list/{id}")
-    public ToDo gitTodoById(@PathVariable Long id) {
-        return toDoService.getDodoById(id);
+    public ResponseEntity<ToDo> gitTodoById(@PathVariable Long id) {
+        ToDo result = toDoService.getDodoById(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("list")
-    public ToDo addTodo(@Valid @RequestBody ToDo toDo) {
-        return toDoService.addTodos(toDo);
+    public ResponseEntity<ToDo> addTodo(@Valid @RequestBody ToDo toDo) {
+        ToDo result = toDoService.addTodos(toDo);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @DeleteMapping("list/{id}")
-    public void removeToDo(@PathVariable Long id) {
+    public ResponseEntity<Void> removeToDo(@PathVariable Long id) {
         toDoService.removeTodo(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
