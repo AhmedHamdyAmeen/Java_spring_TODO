@@ -1,46 +1,51 @@
 package com.ameen.ToDo.Service;
 
-import com.ameen.ToDo.Controller.ToDo;
+import com.ameen.ToDo.Model.ToDo;
+import com.ameen.ToDo.Repository.ToDoRepository;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor // add Argument Constructor
 public class ToDoService {
 
-    // ArrayList => mutable (editable)
-    // Arrays.asList => immutable (not editable)
-    private final List<ToDo> todoList = new ArrayList<>(
-            Arrays.asList(
-                    new ToDo(1, "Go to Gym Ya Wala", "Do Body Exercise"),
-                    new ToDo(2, "Go to Gym", "Do Body Exercise"),
-                    new ToDo(3, "Go to Gym", "Do Body Exercise")
-            )
-    );
+    @Autowired
+    private final ToDoRepository toDoRepository;
 
+    /**
+     * Get All ToDos
+     * @return List<ToDo>
+     */
     public List<ToDo> getTodos() {
-        return todoList;
+        return toDoRepository.findAll();
     }
 
-    public ToDo getDodoById(int id) {
-        for (ToDo todo : todoList) {
-            if (todo.getId() == id) return todo;
+    public ToDo getDodoById(Long id) {
+        boolean isTodoExists = toDoRepository.existsById(id);
+
+        if (!isTodoExists) {
+            throw new IllegalStateException(
+                    "Todo: " + id + " is not exists! 😲"
+            );
         }
 
-        return null;
+        return toDoRepository.findById(id).get();
+
     }
 
-    public Boolean addTodos(ToDo toDo) {
-        return todoList.add(toDo); // returns Boolean
+    public ToDo addTodos(ToDo toDo) {
+        return toDoRepository.save(toDo);
+        // insert => insert a row in db.
+        // save => if the entity found update it, if not insert it
     }
 
-    public void delete(int id) {
 
-        todoList.removeIf(toDo -> toDo.getId() == id);
-
-        // for (ToDo toDo: todoList) { if (toDo.getId() == id) todoList.remove(toDo); }
+    public void removeTodo(Long id) {
+         toDoRepository.deleteById(id);
     }
 }
 
@@ -50,7 +55,9 @@ public class ToDoService {
  * @PathParam & @PathVariable ==> extract query param
  * @RequestParam ==> extract query string
  * @RequestBody
- *
+ * ------------
+ * ArrayList => mutable (editable)
+ * Arrays.asList => immutable (not editable)
  *
  *
  * */
